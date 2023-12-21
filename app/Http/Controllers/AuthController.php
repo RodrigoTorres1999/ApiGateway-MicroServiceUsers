@@ -47,22 +47,22 @@ class AuthController extends Controller
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-
+    
         // Intentar autenticar al usuario
         if (!$token = auth()->attempt($request->only('email', 'password'))) {
             return response()->json(['error' => 'Credenciales incorrectas'], 401);
         }
-
-        if (!$token = JWTAuth::fromUser(auth()->user())) {
-            return response()->json(['error' => 'Error al generar el token'], 500);
-        }
-
+    
+        $user = auth()->user(); // Obtén el modelo de usuario autenticado
+        $token = JWTAuth::fromUser($user);
+    
         return $this->respondWithToken($token);
     }
+
 
 
     protected function respondWithToken($token)
@@ -70,6 +70,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
+            'expires_in' => JWTAuth::factory()->getTTL() * 60,
         ]);
     }
 

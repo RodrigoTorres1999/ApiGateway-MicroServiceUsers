@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MicroLocationController;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,23 +15,21 @@ use Illuminate\Support\Facades\Http;
 |
 */
 
-
 Route::post('/login', [AuthController::class, 'login']);
 
-//Rutas protegidas por token
+// Rutas protegidas por token
 Route::middleware('jwt.auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    //Microservice Locations
+    // Microservice Locations
     Route::get('/locations', [MicroLocationController::class, 'getLocation']);
 });
 
 // Rutas protegidas por token de administradores
 Route::middleware(['jwt.auth', 'checkRole:admin'])->group(function () {
-
     Route::post('/register', [AuthController::class, 'register']);
 
-    //Microservice Locations
+    // Microservice Locations
     Route::post('/locations/country/add', [MicroLocationController::class, 'addCountry']);
     Route::post('/locations/country/update/{countryId}', [MicroLocationController::class, 'updateCountry']);
 
@@ -43,12 +39,9 @@ Route::middleware(['jwt.auth', 'checkRole:admin'])->group(function () {
     Route::post('/locations/city/add', [MicroLocationController::class, 'addCity']);
     Route::post('/locations/city/update/{cityId}', [MicroLocationController::class, 'updateCity']);
 
+    Route::post('/locations/import-data', [MicroLocationController::class, 'importData']);
 });
 
-//Otras rutas protegidas por token de roles
+// Otras rutas protegidas por token de roles
 Route::middleware(['jwt.auth', 'checkRole:client'])->group(function () {
 });
-
-
-
-

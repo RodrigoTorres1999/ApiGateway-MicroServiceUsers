@@ -7,22 +7,20 @@ use Illuminate\Support\Facades\Http;
 
 class MicroLocationController extends Controller
 {
+    public const BASE_LOCATION_URL = 'http://127.0.0.1:8080/api/locations';
 
-    const BASE_LOCATION_URL = 'http://127.0.0.1:8080/api/locations';
-    
     public function getLocation(Request $request)
     {
         $token = $request->bearerToken();
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token
+            'Authorization' => 'Bearer '.$token,
         ])->get(self::BASE_LOCATION_URL);
 
         return $response->json();
     }
 
-
-    //COUNTRIES
+    // COUNTRIES
     public function addCountry(Request $request)
     {
         $token = $request->bearerToken();
@@ -30,27 +28,25 @@ class MicroLocationController extends Controller
         $countryData = $request->all();
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->post(self::BASE_LOCATION_URL . '/country/add', $countryData);
+            'Authorization' => 'Bearer '.$token,
+        ])->post(self::BASE_LOCATION_URL.'/country/add', $countryData);
 
         return $response->json();
     }
 
     public function updateCountry(Request $request, $countryId)
     {
-     
         $token = $request->bearerToken();
         $countryData = $request->all();
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->post(self::BASE_LOCATION_URL . "/country/update/{$countryId}", $countryData);
+            'Authorization' => 'Bearer '.$token,
+        ])->post(self::BASE_LOCATION_URL."/country/update/{$countryId}", $countryData);
 
         return $response->json();
     }
 
-
-    //DEPARTMENTS
+    // DEPARTMENTS
 
     public function addDepartment(Request $request)
     {
@@ -59,27 +55,25 @@ class MicroLocationController extends Controller
         $departmentData = $request->all();
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->post(self::BASE_LOCATION_URL . '/department/add', $departmentData);
+            'Authorization' => 'Bearer '.$token,
+        ])->post(self::BASE_LOCATION_URL.'/department/add', $departmentData);
 
         return $response->json();
     }
 
     public function updateDepartment(Request $request, $departmentId)
     {
-     
         $token = $request->bearerToken();
         $departmentData = $request->all();
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->post(self::BASE_LOCATION_URL . "/department/update/{$departmentId}", $departmentData);
+            'Authorization' => 'Bearer '.$token,
+        ])->post(self::BASE_LOCATION_URL."/department/update/{$departmentId}", $departmentData);
 
         return $response->json();
     }
 
-
-    //Cities
+    // Cities
     public function addCity(Request $request)
     {
         $token = $request->bearerToken();
@@ -87,21 +81,37 @@ class MicroLocationController extends Controller
         $cityData = $request->all();
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->post(self::BASE_LOCATION_URL . '/city/add', $cityData);
+            'Authorization' => 'Bearer '.$token,
+        ])->post(self::BASE_LOCATION_URL.'/city/add', $cityData);
 
         return $response->json();
     }
 
     public function updateCity(Request $request, $cityId)
     {
-     
         $token = $request->bearerToken();
         $cityData = $request->all();
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->post(self::BASE_LOCATION_URL . "/city/update/{$cityId}", $cityData);
+            'Authorization' => 'Bearer '.$token,
+        ])->post(self::BASE_LOCATION_URL."/city/update/{$cityId}", $cityData);
+
+        return $response->json();
+    }
+
+    // importacion de datos
+
+    public function importData(Request $request)
+    {
+        $token = $request->bearerToken();
+
+        $file = $request->file('excel_file');
+
+        // Construye la solicitud solo con el archivo
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer '.$token,
+        ])->attach('excel_file', file_get_contents($file), $file->getClientOriginalName())
+          ->post(self::BASE_LOCATION_URL.'/import-data');
 
         return $response->json();
     }
